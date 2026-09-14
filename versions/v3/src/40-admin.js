@@ -317,7 +317,9 @@ function buildOutcome(){
   </div>
   <aside class="stack g16">
     <section class="panel"><div class="panel-h"><h3>How this will read once it's live</h3></div>
-      <div class="panel-b">${metricChart(A("renewal").metric,{h:180})}</div></section>
+      <div class="panel-b">${(()=>{const ref=A("renewal")||AGENTS[0];
+        return ref?metricChart(ref.metric,{h:180})
+          :`<div class="callout">No live agents yet. Once this publishes, its metric charts here — baseline, target, and every month after.</div>`;})()}</div></section>
     <section class="panel"><div class="panel-h"><h3>Metrics already claimed</h3></div>
       <div class="rows">${AGENTS.filter(a=>!a.org).slice(0,5).map(a=>`<div class="row s-none" style="padding-block:10px">
         ${glyph(a,"sm")}<div class="row-main"><span class="row-sub" style="color:var(--ink)">${esc(a.metric.name)}</span>

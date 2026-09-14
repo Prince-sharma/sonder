@@ -24,13 +24,14 @@ const PEOPLE = {
 };
 
 /* ── agent catalogue ─────────────────────────────────────────────────────── */
-const AGENTS = [
+let AGENTS = [
 {
   id:"rundown", name:"Morning Rundown", mono:"MR", tone:"a", team:"Sales", by:"karan", v:"4.2",
   tag:"Daily digest", verified:true,
   blurb:"Reads the last 72 hours of your mail, Slack and HubSpot and tells you the five things that will cost you money if you skip them today.",
   long:"Scans every thread you're on, cross-references it against your open pipeline, and ranks what needs you by rupees at risk — not by recency. Cold deals, unanswered client questions, renewals crossing a threshold, and CD balances running dry all surface in one list.",
   trigger:{kind:"Schedule", detail:"Weekdays, 08:15 IST", icon:"clock"},
+  plain:{runs:"Every weekday, 8:15 AM", trust:"Just tells you — never touches anything"},
   reads:["Gmail","Slack","HubSpot — deals, activities","Google Calendar"],
   writes:[], autonomy:"suggest",
   metric:{name:"Open deals with no touch in 7+ days", unit:"%", base:23, now:9, target:10, dir:"down",
@@ -55,6 +56,7 @@ const AGENTS = [
   blurb:"Writes the reply, the chaser and the MoM into your Gmail drafts folder before you've opened your laptop. You approve, edit or bin.",
   long:"Watches for four situations — an inbound RFQ, a follow-up falling due, a meeting that just ended, and a chaser that's gone unanswered — and drafts the response in your voice, with the right SOB references and the correct insurer contact already on the To line.",
   trigger:{kind:"Event", detail:"Inbound mail classified as RFQ · follow-up due · meeting ended", icon:"bolt"},
+  plain:{runs:"Whenever an email needs a reply", trust:"Writes drafts only — nothing sends without you"},
   reads:["Gmail","Google Calendar","HubSpot","Drive — proposal library"], writes:["Gmail drafts"],
   autonomy:"draft",
   metric:{name:"Median first response to an inbound broker email", unit:"h", base:11.3, now:3.1, target:4, dir:"down",
@@ -78,6 +80,7 @@ const AGENTS = [
   blurb:"Turns a census and last year's SOB into a floated RFQ — with the insurer shortlist, the design changes worth asking for, and the questions underwriters will ask before they ask them.",
   long:"Reads the employee census, the expiring schedule of benefits and three years of claims MIS, then produces a ready-to-float RFQ. It picks insurers by appetite for that headcount band and industry, flags where the expiring design is leaking (parent claims, room-rent capping, maternity sub-limits) and pre-answers the standard underwriter queries.",
   trigger:{kind:"On demand + event", detail:"Or when a deal reaches ‘Requirement gathered’", icon:"bolt"},
+  plain:{runs:"When you ask, or when a deal is ready to quote", trust:"Prepares the RFQ — you review and send"},
   reads:["Census upload","Expiring SOB","Claims MIS","Drive — insurer appetite sheet","HubSpot"],
   writes:["Drive — RFQ document","HubSpot note"], autonomy:"draft",
   metric:{name:"Quote TAT — RFQ floated to three quotes in hand", unit:"days", base:5.4, now:2.6, target:3, dir:"down",
@@ -101,6 +104,7 @@ const AGENTS = [
   blurb:"Walks into every renewal 90 days early with the loss-ratio story already written and a design fix that takes the loading down.",
   long:"At T-90 it pulls the account's claims MIS from the TPA, computes the incurred claims ratio, decomposes the burn by cohort and benefit, and proposes the two or three design changes that move the renewal number most. Then it builds the client-facing narrative for why utilisation looks the way it does.",
   trigger:{kind:"Schedule", detail:"Daily 07:00 · fires when an account crosses T-90", icon:"clock"},
+  plain:{runs:"Every morning, for accounts near renewal", trust:"Just tells you — never touches anything"},
   reads:["HubSpot","TPA claims MIS","CD ledger","Expiring SOB"], writes:["HubSpot task","Drive — renewal pack"],
   autonomy:"suggest",
   metric:{name:"Renewal retention, by lives", unit:"%", base:84, now:91, target:90, dir:"up",
@@ -122,6 +126,7 @@ const AGENTS = [
   blurb:"Ninety minutes before a client call, a one-page brief lands: who's in the room, what they bought last, what their claims will look like, and the three things to say.",
   long:"Profiles the company — headcount trajectory, funding, industry claims profile, likely incumbent broker — reads every prior thread and MoM with them, and lands a brief with the opening line, the two objections to expect, and the commercial ask. After the call it writes the next-step list back into HubSpot.",
   trigger:{kind:"Event", detail:"90 minutes before any calendar event with an external domain", icon:"bolt"},
+  plain:{runs:"90 minutes before every client meeting", trust:"Just tells you — never touches anything"},
   reads:["Google Calendar","HubSpot","Web","Drive — past MoMs"], writes:["HubSpot note"],
   autonomy:"suggest",
   metric:{name:"Discovery call to proposal sent", unit:"%", base:41, now:52, target:55, dir:"up",
@@ -143,6 +148,7 @@ const AGENTS = [
   blurb:"Drop four insurer quote PDFs in. Get one normalised comparison sheet out, with the traps in the fine print called out.",
   long:"Parses each insurer's quote into a common schema — sum insured tiers, family definition, room rent, co-pay, maternity, waiting periods, corporate buffer, wellness — then flags where a cheaper premium is buying a worse benefit. Produces a client-safe sheet and an internal sheet.",
   trigger:{kind:"On demand", detail:"Upload two or more quotes", icon:"hand"},
+  plain:{runs:"Whenever you drop quotes in", trust:"Builds the sheet — you send it"},
   reads:["Uploaded quote PDFs","Expiring SOB"], writes:["Sheets — comparison"], autonomy:"draft",
   metric:{name:"Quotes in hand to comparison sheet out", unit:"min", base:540, now:38, target:60, dir:"down",
           src:"Placement tracker · manual timestamp, sampled",
@@ -162,6 +168,7 @@ const AGENTS = [
   blurb:"Builds the raw slides and tables for a client proposal — the content, not the styling. Paste straight into the Plum master deck.",
   long:"Takes the comparison sheet and the account context and writes every slide's content: the benefit story, the cost-per-life table, the utilisation chart data, the wellness add-ons and the implementation timeline. Ships as copy-ready blocks so nobody rebuilds the template.",
   trigger:{kind:"On demand", detail:"From a deal, or from a comparison sheet", icon:"hand"},
+  plain:{runs:"Whenever you ask for a proposal", trust:"Writes the slides — you paste and send"},
   reads:["Sheets — comparison","HubSpot","Drive — proposal library"], writes:["Slides — content blocks"],
   autonomy:"draft",
   metric:{name:"Proposal TAT — meeting to proposal sent", unit:"days", base:3.1, now:2.4, target:1.5, dir:"down",
@@ -182,6 +189,7 @@ const AGENTS = [
   blurb:"Watches every account's cash-deposit balance against its endorsement burn rate and shouts before a new joiner goes uncovered.",
   long:"The only agent on the team allowed to act on its own. It projects each account's CD balance forward at the current endorsement rate, and when an account drops below a month of cover it posts to the account channel and opens a HubSpot task on the owner — no human in the loop, because by the time someone notices, an employee is already uninsured.",
   trigger:{kind:"Schedule", detail:"Daily 09:00 IST", icon:"clock"},
+  plain:{runs:"Every morning, 9 AM", trust:"Acts on its own — posts warnings and opens tasks"},
   reads:["CD ledger","HubSpot","Endorsement queue"], writes:["Slack — account channel","HubSpot task"],
   autonomy:"auto",
   metric:{name:"Accounts under one month of CD cover", unit:"%", base:18, now:4, target:5, dir:"down",
@@ -202,6 +210,7 @@ const AGENTS = [
   blurb:"Joins your calls, writes the minutes, and files the actions against the right deal or ticket.",
   long:"Org-wide agent. Records, transcribes and summarises, then routes actions to HubSpot, the claims queue or a Slack thread depending on which team you're on.",
   trigger:{kind:"Event", detail:"Any calendar event with a meeting link", icon:"bolt"},
+  plain:{runs:"Joins your meetings", trust:"Writes the minutes — you review before sharing"},
   reads:["Google Calendar","Meet/Zoom transcript"], writes:["Drive — MoM","HubSpot note"], autonomy:"draft",
   metric:{name:"Meetings with minutes filed within 2 hours", unit:"%", base:31, now:86, target:80, dir:"up",
           src:"Drive · MoM created timestamp vs meeting end",
@@ -219,6 +228,7 @@ const AGENTS = [
   blurb:"Answers wording questions from the actual policy documents, with the clause quoted. Says ‘not covered in the wording’ rather than guessing.",
   long:"Org-wide agent grounded on the empanelled insurers' policy wordings, Plum's SOP library and IRDAI circulars. Refuses to answer outside the corpus.",
   trigger:{kind:"On demand", detail:"Ask it anything", icon:"hand"},
+  plain:{runs:"Whenever you ask", trust:"Just answers — never touches anything"},
   reads:["Drive — policy wordings","Drive — SOP library","IRDAI circular archive"], writes:[], autonomy:"suggest",
   metric:{name:"Wording questions escalated to the placement desk", unit:"/wk", base:47, now:12, target:15, dir:"down",
           src:"Slack · #ask-placement thread count, tagged",
@@ -233,7 +243,7 @@ const AGENTS = [
 ];
 
 /* ── drafts in the workshop (admin view) ─────────────────────────────────── */
-const DRAFTS = [
+let DRAFTS = [
   {id:"lossratio", name:"Loss Ratio Explainer", mono:"LR", tone:"c", v:"0.3", by:"karan",
    state:"In test", tests:{total:14, pass:11, fail:2, review:1},
    note:"Explains a client's ICR to them in plain language, with the cohort that's driving it."},
@@ -246,9 +256,9 @@ const DRAFTS = [
 ];
 
 /* ── the member's world ──────────────────────────────────────────────────── */
-const INSTALLED = ["rundown","draftdesk","dealroom","renewal","comparer","mom"];
+let INSTALLED = ["rundown","draftdesk","dealroom","renewal","comparer","mom"];
 
-const FEED = [
+let FEED = [
 { id:"f1", agent:"rundown", time:"08:15", stripe:"hot", title:"5 things need you before lunch",
   meta:"Scanned 214 mail threads · 31 Slack channels · 18 open deals",
   items:[
@@ -285,7 +295,7 @@ const FEED = [
   cta:{label:"Tell Karan what's wrong", to:"#/m/agent/comparer"}}
 ];
 
-const APPROVALS = [
+let APPROVALS = [
 { id:"a1", agent:"draftdesk", when:"12 min ago", kind:"Email reply", risk:"normal",
   to:"Ananya Bhatt · Head of People, Meesho", cc:"placement@plumhq.com",
   subject:"Re: GMC 2027 — parent cover economics",
@@ -383,7 +393,7 @@ One thing I left in: the offer to take an indicative range today and firm it up 
 ];
 
 /* ── requests from the team to the admin ─────────────────────────────────── */
-const REQUESTS = [
+let REQUESTS = [
 {id:"r1", from:"tanvi", agent:"rundown", when:"22 Aug", state:"open", kind:"Uninstalled",
  t:"Too long. I only ever read the ‘going cold’ section.",
  d:"I'm an SDR — I don't have renewals or CD balances. Five sections of which four are irrelevant means I stopped opening it after a week.",
@@ -453,7 +463,7 @@ const SCENARIOS = [
 ];
 
 /* ── org rollup ──────────────────────────────────────────────────────────── */
-const TEAMS = [
+let TEAMS = [
  {name:"Sales", people:14, live:8, activated:13, habitual:9, power:4, lead:"karan", state:"live",
   headline:"Quote TAT down 52%", trend:[41,44,52,61,71,79,86,93]},
  {name:"Account Management", people:22, live:6, activated:19, habitual:12, power:5, lead:"sanya", state:"live",
@@ -466,7 +476,7 @@ const TEAMS = [
   headline:"Quotes per RFQ up to 4.1", trend:[0,0,12,25,38,50,62,75]}
 ];
 
-const CONNECTIONS = [
+let CONNECTIONS = [
  {n:"Google Workspace", s:"healthy", d:"Gmail, Calendar, Drive · 78 users · OAuth per user", scope:"Per-user delegated"},
  {n:"Slack", s:"healthy", d:"41 channels in scope · bot + user token", scope:"Channel allowlist"},
  {n:"HubSpot", s:"healthy", d:"Deals, contacts, companies, activities, tasks", scope:"Owner-scoped read, task write"},
@@ -476,7 +486,7 @@ const CONNECTIONS = [
  {name:"", n:"Policy wordings (Drive)", s:"healthy", d:"1,840 documents · re-indexed nightly", scope:"Read-only"}
 ];
 
-const AUDIT = [
+let AUDIT = [
  {t:"14 Sep 09:00", who:"cdwatch", what:"Auto-acted — posted CD warning to #acct-nutrabay and opened task on Sanya Kapoor", tag:"auto"},
  {t:"14 Sep 08:16", who:"draftdesk", what:"Created 3 Gmail drafts for Rhea Nair · 0 sent", tag:"draft"},
  {t:"13 Sep 18:22", who:"karan", what:"Published Morning Rundown v4.2 to Sales (14 people)", tag:"publish"},

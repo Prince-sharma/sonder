@@ -3,7 +3,7 @@
 const ROLES={
  member:{who:"rhea", label:"Member", nav:[
    {s:"Your day"},
-   {r:"m/today", t:"Today", i:"home", c:"5", hot:true},
+   {r:"m/today", t:"Today", i:"home", c:()=>state.stage>=3?5:FEED.reduce((n,f)=>n+(f.items||[]).length,0), hot:true},
    {r:"m/approvals", t:"Approvals", i:"inbox", c:()=>APPROVALS.filter(a=>!state.approved.has(a.id)).length, hot:true},
    {r:"m/thread/rundown", t:"Threads", i:"chat"},
    {s:"Agents"},
@@ -15,11 +15,11 @@ const ROLES={
  admin:{who:"karan", label:"Team admin", nav:[
    {s:"Sales"},
    {r:"a/pulse", t:"Team pulse", i:"home"},
-   {r:"a/agents", t:"Agents", i:"layers", c:"8"},
-   {r:"a/requests", t:"Requests", i:"inbox", c:"4", hot:true},
+   {r:"a/agents", t:"Agents", i:"layers", c:()=>AGENTS.filter(a=>!a.org).length},
+   {r:"a/requests", t:"Requests", i:"inbox", c:()=>REQUESTS.filter(r=>r.state==="open").length, hot:true},
    {s:"Build"},
    {r:"a/build", t:"Agent builder", i:"wrench"},
-   {r:"a/test", t:"Test lab", i:"flask", c:"14"},
+   {r:"a/test", t:"Test lab", i:"flask", c:()=>DRAFTS[0]?DRAFTS[0].tests.total:0},
    {r:"a/publish", t:"Publish & rollout", i:"spark"},
    {s:"Measure"},
    {r:"a/analytics/rundown", t:"Agent analytics", i:"chart"},
@@ -28,8 +28,8 @@ const ROLES={
  super:{who:"ananya", label:"Super admin", nav:[
    {s:"Plum"},
    {r:"s/overview", t:"Organisation", i:"home"},
-   {r:"s/agents", t:"All agents", i:"layers", c:"22"},
-   {r:"s/people", t:"People", i:"users", c:"78"},
+   {r:"s/agents", t:"All agents", i:"layers", c:()=>state.stage>=3?22:AGENTS.length},
+   {r:"s/people", t:"People", i:"users", c:()=>state.stage>=3?78:(state.stage>=1?15:1)},
    {s:"Administer"},
    {r:"s/teams", t:"Teams & rollout", i:"grid"},
    {r:"s/connections", t:"Connections & audit", i:"plug"}
@@ -45,8 +45,12 @@ const HOME={member:"#/m/today", admin:"#/a/pulse", super:"#/s/overview"};
 function renderRoles(){
   $("#roleswitch").innerHTML=Object.entries(ROLES).map(([k,v])=>{
     const p=P(v.who);
-    return `<button data-role="${k}" aria-pressed="${state.role===k}" title="${esc(p.n)} — ${esc(p.r)}">
-      <span class="rs-dot"></span><span class="rsname">${esc(v.label)}</span></button>`}).join("");
+    /* v3: at Day 0 only the super admin has an account */
+    const locked=state.stage===0&&k!=="super";
+    return `<button data-role="${k}" aria-pressed="${state.role===k}"${locked
+      ?` aria-disabled="true" title="Unlocks when the super admin finishes setup — use the Journey bar"`
+      :` title="${esc(p.n)} — ${esc(p.r)}"`}>
+      <span class="rs-dot"></span><span class="rsname">${esc(v.label)}</span>${locked?ICON.lock:""}</button>`}).join("");
 }
 
 function renderRail(){
@@ -120,7 +124,7 @@ function installModal(id){
   const a=A(id); if(!a) return;
   modal(`<div class="panel-h" style="border-radius:11px 11px 0 0">${glyph(a)}
       <div><h3>Install ${esc(a.name)}</h3>
-        <div class="tiny faint" style="margin-top:2px">Built by ${esc(P(a.by).n)} · v${a.v}</div></div>
+        <div class="tiny faint" style="margin-top:2px">Built by ${esc(P(a.by).n)}</div></div>
       <div class="r"><button class="btn sm ghost" data-act="close">${ICON.x}</button></div></div>
     <div class="modal-b stack g16">
       <p style="font-size:13.5px;line-height:1.65">${esc(a.blurb)}</p>
@@ -133,8 +137,8 @@ function installModal(id){
           <span class="row-sub" style="color:var(--ink)">${a.writes.length?a.writes.join(" · "):"Nothing"}</span></div></div>
         <div class="row s-${a.autonomy==="auto"?"bad":a.autonomy==="draft"?"hot":"ok"}" style="padding-block:11px">
           <span class="stripe"></span><div class="row-main">
-          <span class="tiny faint">Autonomy</span>
-          <span class="row-sub" style="color:var(--ink)"><b>${AUT[a.autonomy].l}</b> — ${esc(AUT[a.autonomy].d)}</span></div></div>
+          <span class="tiny faint">What it does on its own</span>
+          <span class="row-sub" style="color:var(--ink)">${esc(a.plain.trust)}</span></div></div>
       </div>
       <div class="callout info"><b>Defaults are already set.</b> You can install now and change anything later — ${a.params.length} settings are yours.</div>
     </div>
@@ -168,7 +172,15 @@ function suggestModal(id){
 /* ═══════════════════════════ interactions ═══════════════════════════ */
 document.addEventListener("click",e=>{
   const roleBtn=e.target.closest("[data-role]");
-  if(roleBtn){ state.role=roleBtn.dataset.role; location.hash=HOME[state.role]; return; }
+  if(roleBtn){
+    if(roleBtn.getAttribute("aria-disabled")==="true"){
+      toast("At Day 0 only the super admin has an account — finish setup first"); return;
+    }
+    state.role=roleBtn.dataset.role; location.hash=HOME[state.role]; return;
+  }
+
+  const jBtn=e.target.closest("[data-stage]");
+  if(jBtn){ setStage(+jBtn.dataset.stage,true); toast(JOURNEY[state.stage].title); return; }
 
   const tabBtn=e.target.closest("[data-tab]");
   if(tabBtn){ state.buildTab=tabBtn.dataset.tab; render(); return; }
@@ -177,6 +189,9 @@ document.addEventListener("click",e=>{
   if(act){
     const k=act.dataset.act, id=act.dataset.id;
     if(k==="close"){ closeModal(); return; }
+    if(k==="step"){ stepModal(id); return; }
+    if(k==="dostep"){ completeStep(id); return; }
+    if(k==="closenav"){ closeModal(); location.hash=id.replace(/^#/,""); return; }
     if(k==="install"){ installModal(id); return; }
     if(k==="doinstall"){ state.installed.add(id); closeModal(); toast(`${A(id).name} installed — first run on its next trigger`); render(); return; }
     if(k==="uninstall"){ state.installed.delete(id); toast(`Uninstalled. You'll be asked why.`); render(); return; }
@@ -238,6 +253,6 @@ const THIS_VERSION="v3";
   });
 })();
 
-if(!location.hash) location.hash=HOME.member;
+if(!location.hash) location.hash=HOME[state.role];
 render();
 </script>

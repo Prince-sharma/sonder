@@ -2,7 +2,7 @@
 # Rebuilds both outputs from src/.  Run:  bash build.sh
 set -e
 cd "$(dirname "$0")"
-PARTS="src/00-head.html src/01-shell.html src/10-data.js src/20-lib.js src/30-member.js src/40-admin.js src/41-admin2.js src/50-super.js src/60-handoff.js src/70-app.js"
+PARTS="src/00-head.html src/01-shell.html src/10-data.js src/20-lib.js src/30-member.js src/40-admin.js src/41-admin2.js src/50-super.js src/60-handoff.js src/65-journey.js src/70-app.js"
 mkdir -p dist
 
 # 1. artifact body — carries no doctype/html/head/body; the Claude Artifact host wraps it

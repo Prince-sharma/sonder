@@ -1,4 +1,4 @@
-# Bench — UI/UX prototype
+# Bench — UI/UX prototype · v3 (Fresh install)
 
 An internal agent platform for business teams. A subject-matter expert builds an
 agent once; their teammates install it and it runs from the next trigger. Replaces
@@ -7,8 +7,49 @@ handing every business user an individual AI subscription.
 **Pilot tenant in this prototype:** Plum, a group employee-benefits insurance broker
 in India. **Team:** Sales, 14 people.
 
-"Bench" is a working name. It appears in `src/01-shell.html` and in the `<title>` at
-the top of `src/00-head.html` — two places to change.
+"v3" is the same platform as v2 but **starting from scratch** — see
+[What's different in v3](#whats-different-in-v3) below. Everything else in this
+README describes the shared prototype.
+
+---
+
+## What's different in v3
+
+v1/v2 open with the pilot preloaded — eight agents, adoption data, approvals
+flowing. v3 answers the question behind that: **how does an org get there from
+nothing?** It opens at day zero and walks the setup in order.
+
+The **Journey bar** (the strip under the top bar) has four stages:
+
+| Stage | What exists | Whose move |
+|---|---|---|
+| **0 · Day 0** | Nothing. Only the super admin has an account. | Super admin: create the Sales team, invite Karan as team admin, connect Google Workspace, Slack, HubSpot |
+| **1 · Org ready** | Team, 15 people, connections. No agents. | Team admin: write the business context, build the first agent, test it, publish it |
+| **2 · First agent** | Morning Rundown v1.0 live, 3 installs, week-one numbers | Everyone: install, act, request |
+| **3 · Full pilot** | The v1 world, byte-for-byte | — |
+
+Two ways to walk it:
+
+- **Do the steps.** Each checklist step has a Do-it button (a prototype mock of
+  the real action). Complete all five super-admin steps and the platform advances
+  to Org ready and hands over to Karan; complete his four and the first agent
+  goes live. The role switcher unlocks Team admin and Member only after the org
+  exists — at Day 0 only the super admin has an account.
+- **Jump.** Click any stage on the Journey bar. Stage 3 restores the full v1
+  dataset verbatim, so the destination is exactly the world v1/v2 show.
+
+Every screen has an honest empty state at the early stages — the store, the feed,
+analytics, requests, the test lab — each saying what's coming and whose move it
+is. Deep-link a stage with `bench.html?stage=2#/m/today`.
+
+The journey lives in `src/65-journey.js`: stage data, the checklists, the
+replacement screens, and the wiring. `src/10-data.js` declares its collections
+with `let` so stages can swap them; the full pilot set is snapshotted at load and
+restored verbatim at stage 3.
+
+v3 also carries v2's simpler member UI (plain-language runs/trust instead of
+Suggest/Draft/Schedule/Event chips, no Verified badge, no version numbers on
+member screens).
 
 ---
 

@@ -7,8 +7,10 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const md=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
 const pct=n=>Math.round(n)+"%";
 
-const state={role:"member", route:"", notes:false, installed:new Set(INSTALLED), approved:new Set(),
-             buildTab:"chat", testRun:false, builtFromChat:false};
+const state={role:"super", route:"", notes:false, installed:new Set(INSTALLED), approved:new Set(),
+             buildTab:"chat", testRun:false, builtFromChat:false,
+             /* v3 journey — see src/65-journey.js */
+             stage:0, setupDone:new Set()};
 
 const ICON={
  clock:'<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.4"/><path d="M8 4.6V8l2.3 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
@@ -46,6 +48,11 @@ const AUT={
 function av(id,cls=""){const p=P(id);return `<span class="avatar ${cls}" title="${esc(p.n)}">${esc(p.i)}</span>`;}
 function glyph(a,cls=""){return `<span class="glyph ${a.tone||""} ${cls}">${esc(a.mono)}</span>`;}
 function autChip(k){const a=AUT[k];return `<span class="chip ${a.c}" title="${esc(a.d)}">${a.icon}${a.l}</span>`;}
+/* v2 — member-facing plain language. Runs/trust replace the autonomy + trigger
+   chips; the icon still encodes the level (eye advises, lock waits, bolt acts). */
+function plainRun(a){return `<span class="chip plain">${ICON.clock}${esc(a.plain.runs)}</span>`;}
+function plainTrust(a){const ic=a.autonomy==="auto"?ICON.bolt:a.autonomy==="draft"?ICON.lock:ICON.eye;
+  return `<span class="chip plain">${ic}${esc(a.plain.trust)}</span>`;}
 function verChip(a){return a.verified?`<span class="chip ok" title="Reviewed and published by a team admin">${ICON.check}Verified</span>`:
   (a.isNew?`<span class="chip info">${ICON.spark}New</span>`:"");}
 function fmtMetric(m,v){

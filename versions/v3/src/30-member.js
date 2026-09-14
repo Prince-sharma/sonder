@@ -54,6 +54,7 @@ SCREENS["m/store"]=()=>{
   ${phead("Agent store","Built by people on your team who already do the job well. Install and it runs from the next trigger — no setup call, no prompt to write.",
     `<span class="chip ok">${ICON.users}Sales · 14 people</span>`)}
   ${note("**Install, don't build.** An installer can change the input parameters an author exposed and nothing else. That's deliberate — the author already optimised this. The ‘Suggest a change' path on the detail page is how a user pushes back, and it lands in the admin's Requests inbox rather than forking the agent.")}
+  ${note("**v2 — the store speaks in outcomes, not platform vocabulary.** Verified badges, version numbers and Suggest/Draft/Schedule/Event chips are gone from everything a member sees. A member needs three things: what it does, when it runs, and whether it can do anything without them. Admin screens keep the full vocabulary — it's their job to care.")}
   <div class="rowflex" style="margin-bottom:18px">
     <div class="seg"><button aria-pressed="true">All 8</button><button aria-pressed="false">Not installed 3</button>
       <button aria-pressed="false">Most used</button><button aria-pressed="false">New</button></div>
@@ -73,11 +74,10 @@ function storeCard(a){
     <div class="card-h">${glyph(a)}
       <div style="min-width:0;flex:1"><div class="t">${esc(a.name)}</div>
         <div class="by">${esc(b.n)} · ${esc(b.r)}</div></div>
-      ${verChip(a)}</div>
+      ${a.isNew?`<span class="chip info">${ICON.spark}New</span>`:""}</div>
     <p class="card-d">${esc(a.blurb)}</p>
     <div class="card-m">
-      <div class="rowflex" style="gap:6px">${autChip(a.autonomy)}
-        <span class="chip">${ICON[a.trigger.icon]}${esc(a.trigger.kind)}</span></div>
+      <div class="rowflex" style="gap:6px">${plainRun(a)}${plainTrust(a)}</div>
       <div class="rowflex tiny" style="gap:8px">
         <span class="faint nowrap">Moves</span>
         <b style="font-size:12px;font-weight:600">${esc(a.metric.name)}</b></div>
@@ -101,8 +101,7 @@ SCREENS["m/agent"]=(id)=>{
   <div class="phead tight"><div class="phead-row">
     <div style="display:flex;gap:14px;align-items:flex-start;min-width:0">${glyph(a,"lg")}
       <div style="min-width:0"><h1 style="font-size:27px">${esc(a.name)}</h1>
-      <div class="rowflex" style="margin-top:8px;gap:7px">${verChip(a)}${autChip(a.autonomy)}
-        <span class="chip">v${a.v}</span><span class="chip plain">${esc(a.team)}</span></div></div></div>
+      <div class="rowflex" style="margin-top:8px;gap:7px"><span class="chip plain">${esc(a.team)}</span>${plainRun(a)}${plainTrust(a)}</div></div></div>
     <div class="phead-actions">
       ${on?`<button class="btn" data-act="uninstall" data-id="${a.id}">Uninstall</button>
             <a class="btn pri" href="#/m/thread/${a.id}">${ICON.chat}Open</a>`
@@ -147,14 +146,14 @@ SCREENS["m/agent"]=(id)=>{
         <div class="kv"><dt>Runs when</dt><dd class="rowflex" style="gap:6px">${ICON[a.trigger.icon]}${esc(a.trigger.detail)}</dd></div>
         <div class="kv"><dt>Reads</dt><dd>${a.reads.map(r=>`<span class="chip" style="margin:0 4px 4px 0">${esc(r)}</span>`).join("")}</dd></div>
         <div class="kv"><dt>Writes</dt><dd>${a.writes.length?a.writes.map(r=>`<span class="chip hot" style="margin:0 4px 4px 0">${esc(r)}</span>`).join(""):`<span class="tiny faint">Nothing. Read-only.</span>`}</dd></div>
-        <div class="kv"><dt>Autonomy</dt><dd>${autChip(a.autonomy)}<div class="tiny faint" style="margin-top:5px">${esc(AUT[a.autonomy].d)}</div></dd></div>
+        <div class="kv"><dt>On its own</dt><dd>${plainTrust(a)}</dd></div>
       </div></section>
       <section class="panel"><div class="panel-h"><h3>On your team</h3></div><div class="panel-b stack g12">
         <div class="rowflex"><span class="tiny faint">Installed by</span><span class="topbar-spacer"></span>
           <b class="mono">${a.installs} of ${a.org?78:14}</b></div>
         <span class="meter"><i style="width:${(a.installs/(a.org?78:14)*100).toFixed(0)}%"></i></span>
-        <div class="rowflex" style="gap:-4px;margin-top:4px">${["karan","rhea","vikram","aditya","meera","sanya"].map(p=>av(p,"sm")).join("")}
-          <span class="tiny faint">and ${a.installs-6} more</span></div>
+        <div class="rowflex" style="gap:4px;margin-top:4px">${["karan","rhea","vikram","aditya","meera","sanya"].slice(0,Math.max(0,Math.min(6,a.installs))).map(p=>av(p,"sm")).join("")}
+          ${a.installs>6?`<span class="tiny faint">and ${a.installs-6} more</span>`:""}</div>
         <hr class="hr">
         <div class="rowflex"><span class="tiny faint">Acted on</span><span class="topbar-spacer"></span><b class="mono">${a.actedPct}%</b></div>
         <div class="rowflex"><span class="tiny faint">Dismissed</span><span class="topbar-spacer"></span><b class="mono">${a.dismissPct}%</b></div>
@@ -180,8 +179,7 @@ SCREENS["m/installed"]=()=>{
     ${mine.map(a=>`<div class="row s-ok"><span class="stripe"></span>${glyph(a,"sm")}
       <div class="row-main"><span class="row-title">${esc(a.name)}</span>
         <span class="row-sub">${esc(a.trigger.detail)} · last run ${["08:15","08:16","09:58","07:02","4 days ago","Friday 15:58"][mine.indexOf(a)]||"today"}</span></div>
-      <div class="row-aside">${autChip(a.autonomy)}
-        <span class="chip">v${a.v}</span>
+      <div class="row-aside">
         <button class="btn sm" data-act="configure" data-id="${a.id}">Settings</button>
         <button class="switch" role="switch" aria-checked="true" aria-label="Pause ${esc(a.name)}" data-act="pause"></button></div></div>`).join("")}
   </div></section>
@@ -209,8 +207,7 @@ function approvalCard(ap){
   return `<section class="panel" style="margin-bottom:16px">
     <div class="panel-h">${glyph(a,"sm")}
       <div style="min-width:0"><h3>${esc(ap.subject)}</h3>
-        <div class="tiny faint" style="margin-top:2px">${esc(ap.kind)} · ${esc(a.name)} · ${esc(ap.when)}</div></div>
-      <div class="r">${autChip(a.autonomy)}</div></div>
+        <div class="tiny faint" style="margin-top:2px">${esc(ap.kind)} · ${esc(a.name)} · ${esc(ap.when)}</div></div></div>
     <div class="panel-b stack g12">
       <div class="rowflex tiny" style="gap:16px">
         <span><span class="faint">To</span> <b>${esc(ap.to)}</b></span>
