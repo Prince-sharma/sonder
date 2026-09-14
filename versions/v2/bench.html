@@ -104,6 +104,17 @@ button,input,select,textarea{font:inherit;color:inherit}
   color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;margin-left:2px}
 .topbar-spacer{flex:1}
 
+/* version switcher — jumps between the version folders, keeping the route */
+.versel{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--ink-2);
+  padding:5px 8px;cursor:pointer;flex-shrink:0;-webkit-appearance:none;appearance:none;
+  padding-right:22px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 12px) 55%,calc(100% - 8px) 55%;
+  background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+.versel:hover{color:var(--ink);border-color:var(--brand-line)}
+.versel:focus-visible{outline-offset:0}
+
 .roleswitch{display:flex;align-items:center;gap:0;background:var(--surface-2);border:1px solid var(--line);
   border-radius:7px;padding:2px;overflow-x:auto;scrollbar-width:none}
 .roleswitch::-webkit-scrollbar{display:none}
@@ -409,6 +420,11 @@ pre.code{display:block;padding:13px 15px;overflow-x:auto;white-space:pre;line-he
     <span class="brand-name">Bench</span>
     <span class="brand-tag">Plum · Prototype</span>
   </div>
+  <select class="versel" id="versel" aria-label="Prototype version">
+    <option value="v1">v1 · Pilot</option>
+    <option value="v2">v2 · Simpler member UI</option>
+    <option value="v3">v3 · Fresh install</option>
+  </select>
   <div class="topbar-spacer"></div>
   <div class="roleswitch" id="roleswitch" role="group" aria-label="Preview as"></div>
   <button class="iconbtn" id="notesbtn" aria-pressed="false" title="Show design notes" aria-label="Show design notes">
@@ -456,6 +472,7 @@ const AGENTS = [
   blurb:"Reads the last 72 hours of your mail, Slack and HubSpot and tells you the five things that will cost you money if you skip them today.",
   long:"Scans every thread you're on, cross-references it against your open pipeline, and ranks what needs you by rupees at risk — not by recency. Cold deals, unanswered client questions, renewals crossing a threshold, and CD balances running dry all surface in one list.",
   trigger:{kind:"Schedule", detail:"Weekdays, 08:15 IST", icon:"clock"},
+  plain:{runs:"Every weekday, 8:15 AM", trust:"Just tells you — never touches anything"},
   reads:["Gmail","Slack","HubSpot — deals, activities","Google Calendar"],
   writes:[], autonomy:"suggest",
   metric:{name:"Open deals with no touch in 7+ days", unit:"%", base:23, now:9, target:10, dir:"down",
@@ -480,6 +497,7 @@ const AGENTS = [
   blurb:"Writes the reply, the chaser and the MoM into your Gmail drafts folder before you've opened your laptop. You approve, edit or bin.",
   long:"Watches for four situations — an inbound RFQ, a follow-up falling due, a meeting that just ended, and a chaser that's gone unanswered — and drafts the response in your voice, with the right SOB references and the correct insurer contact already on the To line.",
   trigger:{kind:"Event", detail:"Inbound mail classified as RFQ · follow-up due · meeting ended", icon:"bolt"},
+  plain:{runs:"Whenever an email needs a reply", trust:"Writes drafts only — nothing sends without you"},
   reads:["Gmail","Google Calendar","HubSpot","Drive — proposal library"], writes:["Gmail drafts"],
   autonomy:"draft",
   metric:{name:"Median first response to an inbound broker email", unit:"h", base:11.3, now:3.1, target:4, dir:"down",
@@ -503,6 +521,7 @@ const AGENTS = [
   blurb:"Turns a census and last year's SOB into a floated RFQ — with the insurer shortlist, the design changes worth asking for, and the questions underwriters will ask before they ask them.",
   long:"Reads the employee census, the expiring schedule of benefits and three years of claims MIS, then produces a ready-to-float RFQ. It picks insurers by appetite for that headcount band and industry, flags where the expiring design is leaking (parent claims, room-rent capping, maternity sub-limits) and pre-answers the standard underwriter queries.",
   trigger:{kind:"On demand + event", detail:"Or when a deal reaches ‘Requirement gathered’", icon:"bolt"},
+  plain:{runs:"When you ask, or when a deal is ready to quote", trust:"Prepares the RFQ — you review and send"},
   reads:["Census upload","Expiring SOB","Claims MIS","Drive — insurer appetite sheet","HubSpot"],
   writes:["Drive — RFQ document","HubSpot note"], autonomy:"draft",
   metric:{name:"Quote TAT — RFQ floated to three quotes in hand", unit:"days", base:5.4, now:2.6, target:3, dir:"down",
@@ -526,6 +545,7 @@ const AGENTS = [
   blurb:"Walks into every renewal 90 days early with the loss-ratio story already written and a design fix that takes the loading down.",
   long:"At T-90 it pulls the account's claims MIS from the TPA, computes the incurred claims ratio, decomposes the burn by cohort and benefit, and proposes the two or three design changes that move the renewal number most. Then it builds the client-facing narrative for why utilisation looks the way it does.",
   trigger:{kind:"Schedule", detail:"Daily 07:00 · fires when an account crosses T-90", icon:"clock"},
+  plain:{runs:"Every morning, for accounts near renewal", trust:"Just tells you — never touches anything"},
   reads:["HubSpot","TPA claims MIS","CD ledger","Expiring SOB"], writes:["HubSpot task","Drive — renewal pack"],
   autonomy:"suggest",
   metric:{name:"Renewal retention, by lives", unit:"%", base:84, now:91, target:90, dir:"up",
@@ -547,6 +567,7 @@ const AGENTS = [
   blurb:"Ninety minutes before a client call, a one-page brief lands: who's in the room, what they bought last, what their claims will look like, and the three things to say.",
   long:"Profiles the company — headcount trajectory, funding, industry claims profile, likely incumbent broker — reads every prior thread and MoM with them, and lands a brief with the opening line, the two objections to expect, and the commercial ask. After the call it writes the next-step list back into HubSpot.",
   trigger:{kind:"Event", detail:"90 minutes before any calendar event with an external domain", icon:"bolt"},
+  plain:{runs:"90 minutes before every client meeting", trust:"Just tells you — never touches anything"},
   reads:["Google Calendar","HubSpot","Web","Drive — past MoMs"], writes:["HubSpot note"],
   autonomy:"suggest",
   metric:{name:"Discovery call to proposal sent", unit:"%", base:41, now:52, target:55, dir:"up",
@@ -568,6 +589,7 @@ const AGENTS = [
   blurb:"Drop four insurer quote PDFs in. Get one normalised comparison sheet out, with the traps in the fine print called out.",
   long:"Parses each insurer's quote into a common schema — sum insured tiers, family definition, room rent, co-pay, maternity, waiting periods, corporate buffer, wellness — then flags where a cheaper premium is buying a worse benefit. Produces a client-safe sheet and an internal sheet.",
   trigger:{kind:"On demand", detail:"Upload two or more quotes", icon:"hand"},
+  plain:{runs:"Whenever you drop quotes in", trust:"Builds the sheet — you send it"},
   reads:["Uploaded quote PDFs","Expiring SOB"], writes:["Sheets — comparison"], autonomy:"draft",
   metric:{name:"Quotes in hand to comparison sheet out", unit:"min", base:540, now:38, target:60, dir:"down",
           src:"Placement tracker · manual timestamp, sampled",
@@ -587,6 +609,7 @@ const AGENTS = [
   blurb:"Builds the raw slides and tables for a client proposal — the content, not the styling. Paste straight into the Plum master deck.",
   long:"Takes the comparison sheet and the account context and writes every slide's content: the benefit story, the cost-per-life table, the utilisation chart data, the wellness add-ons and the implementation timeline. Ships as copy-ready blocks so nobody rebuilds the template.",
   trigger:{kind:"On demand", detail:"From a deal, or from a comparison sheet", icon:"hand"},
+  plain:{runs:"Whenever you ask for a proposal", trust:"Writes the slides — you paste and send"},
   reads:["Sheets — comparison","HubSpot","Drive — proposal library"], writes:["Slides — content blocks"],
   autonomy:"draft",
   metric:{name:"Proposal TAT — meeting to proposal sent", unit:"days", base:3.1, now:2.4, target:1.5, dir:"down",
@@ -607,6 +630,7 @@ const AGENTS = [
   blurb:"Watches every account's cash-deposit balance against its endorsement burn rate and shouts before a new joiner goes uncovered.",
   long:"The only agent on the team allowed to act on its own. It projects each account's CD balance forward at the current endorsement rate, and when an account drops below a month of cover it posts to the account channel and opens a HubSpot task on the owner — no human in the loop, because by the time someone notices, an employee is already uninsured.",
   trigger:{kind:"Schedule", detail:"Daily 09:00 IST", icon:"clock"},
+  plain:{runs:"Every morning, 9 AM", trust:"Acts on its own — posts warnings and opens tasks"},
   reads:["CD ledger","HubSpot","Endorsement queue"], writes:["Slack — account channel","HubSpot task"],
   autonomy:"auto",
   metric:{name:"Accounts under one month of CD cover", unit:"%", base:18, now:4, target:5, dir:"down",
@@ -627,6 +651,7 @@ const AGENTS = [
   blurb:"Joins your calls, writes the minutes, and files the actions against the right deal or ticket.",
   long:"Org-wide agent. Records, transcribes and summarises, then routes actions to HubSpot, the claims queue or a Slack thread depending on which team you're on.",
   trigger:{kind:"Event", detail:"Any calendar event with a meeting link", icon:"bolt"},
+  plain:{runs:"Joins your meetings", trust:"Writes the minutes — you review before sharing"},
   reads:["Google Calendar","Meet/Zoom transcript"], writes:["Drive — MoM","HubSpot note"], autonomy:"draft",
   metric:{name:"Meetings with minutes filed within 2 hours", unit:"%", base:31, now:86, target:80, dir:"up",
           src:"Drive · MoM created timestamp vs meeting end",
@@ -644,6 +669,7 @@ const AGENTS = [
   blurb:"Answers wording questions from the actual policy documents, with the clause quoted. Says ‘not covered in the wording’ rather than guessing.",
   long:"Org-wide agent grounded on the empanelled insurers' policy wordings, Plum's SOP library and IRDAI circulars. Refuses to answer outside the corpus.",
   trigger:{kind:"On demand", detail:"Ask it anything", icon:"hand"},
+  plain:{runs:"Whenever you ask", trust:"Just answers — never touches anything"},
   reads:["Drive — policy wordings","Drive — SOP library","IRDAI circular archive"], writes:[], autonomy:"suggest",
   metric:{name:"Wording questions escalated to the placement desk", unit:"/wk", base:47, now:12, target:15, dir:"down",
           src:"Slack · #ask-placement thread count, tagged",
@@ -958,6 +984,11 @@ const AUT={
 function av(id,cls=""){const p=P(id);return `<span class="avatar ${cls}" title="${esc(p.n)}">${esc(p.i)}</span>`;}
 function glyph(a,cls=""){return `<span class="glyph ${a.tone||""} ${cls}">${esc(a.mono)}</span>`;}
 function autChip(k){const a=AUT[k];return `<span class="chip ${a.c}" title="${esc(a.d)}">${a.icon}${a.l}</span>`;}
+/* v2 — member-facing plain language. Runs/trust replace the autonomy + trigger
+   chips; the icon still encodes the level (eye advises, lock waits, bolt acts). */
+function plainRun(a){return `<span class="chip plain">${ICON.clock}${esc(a.plain.runs)}</span>`;}
+function plainTrust(a){const ic=a.autonomy==="auto"?ICON.bolt:a.autonomy==="draft"?ICON.lock:ICON.eye;
+  return `<span class="chip plain">${ic}${esc(a.plain.trust)}</span>`;}
 function verChip(a){return a.verified?`<span class="chip ok" title="Reviewed and published by a team admin">${ICON.check}Verified</span>`:
   (a.isNew?`<span class="chip info">${ICON.spark}New</span>`:"");}
 function fmtMetric(m,v){
@@ -1114,6 +1145,7 @@ SCREENS["m/store"]=()=>{
   ${phead("Agent store","Built by people on your team who already do the job well. Install and it runs from the next trigger — no setup call, no prompt to write.",
     `<span class="chip ok">${ICON.users}Sales · 14 people</span>`)}
   ${note("**Install, don't build.** An installer can change the input parameters an author exposed and nothing else. That's deliberate — the author already optimised this. The ‘Suggest a change' path on the detail page is how a user pushes back, and it lands in the admin's Requests inbox rather than forking the agent.")}
+  ${note("**v2 — the store speaks in outcomes, not platform vocabulary.** Verified badges, version numbers and Suggest/Draft/Schedule/Event chips are gone from everything a member sees. A member needs three things: what it does, when it runs, and whether it can do anything without them. Admin screens keep the full vocabulary — it's their job to care.")}
   <div class="rowflex" style="margin-bottom:18px">
     <div class="seg"><button aria-pressed="true">All 8</button><button aria-pressed="false">Not installed 3</button>
       <button aria-pressed="false">Most used</button><button aria-pressed="false">New</button></div>
@@ -1133,11 +1165,10 @@ function storeCard(a){
     <div class="card-h">${glyph(a)}
       <div style="min-width:0;flex:1"><div class="t">${esc(a.name)}</div>
         <div class="by">${esc(b.n)} · ${esc(b.r)}</div></div>
-      ${verChip(a)}</div>
+      ${a.isNew?`<span class="chip info">${ICON.spark}New</span>`:""}</div>
     <p class="card-d">${esc(a.blurb)}</p>
     <div class="card-m">
-      <div class="rowflex" style="gap:6px">${autChip(a.autonomy)}
-        <span class="chip">${ICON[a.trigger.icon]}${esc(a.trigger.kind)}</span></div>
+      <div class="rowflex" style="gap:6px">${plainRun(a)}${plainTrust(a)}</div>
       <div class="rowflex tiny" style="gap:8px">
         <span class="faint nowrap">Moves</span>
         <b style="font-size:12px;font-weight:600">${esc(a.metric.name)}</b></div>
@@ -1161,8 +1192,7 @@ SCREENS["m/agent"]=(id)=>{
   <div class="phead tight"><div class="phead-row">
     <div style="display:flex;gap:14px;align-items:flex-start;min-width:0">${glyph(a,"lg")}
       <div style="min-width:0"><h1 style="font-size:27px">${esc(a.name)}</h1>
-      <div class="rowflex" style="margin-top:8px;gap:7px">${verChip(a)}${autChip(a.autonomy)}
-        <span class="chip">v${a.v}</span><span class="chip plain">${esc(a.team)}</span></div></div></div>
+      <div class="rowflex" style="margin-top:8px;gap:7px"><span class="chip plain">${esc(a.team)}</span>${plainRun(a)}${plainTrust(a)}</div></div></div>
     <div class="phead-actions">
       ${on?`<button class="btn" data-act="uninstall" data-id="${a.id}">Uninstall</button>
             <a class="btn pri" href="#/m/thread/${a.id}">${ICON.chat}Open</a>`
@@ -1207,7 +1237,7 @@ SCREENS["m/agent"]=(id)=>{
         <div class="kv"><dt>Runs when</dt><dd class="rowflex" style="gap:6px">${ICON[a.trigger.icon]}${esc(a.trigger.detail)}</dd></div>
         <div class="kv"><dt>Reads</dt><dd>${a.reads.map(r=>`<span class="chip" style="margin:0 4px 4px 0">${esc(r)}</span>`).join("")}</dd></div>
         <div class="kv"><dt>Writes</dt><dd>${a.writes.length?a.writes.map(r=>`<span class="chip hot" style="margin:0 4px 4px 0">${esc(r)}</span>`).join(""):`<span class="tiny faint">Nothing. Read-only.</span>`}</dd></div>
-        <div class="kv"><dt>Autonomy</dt><dd>${autChip(a.autonomy)}<div class="tiny faint" style="margin-top:5px">${esc(AUT[a.autonomy].d)}</div></dd></div>
+        <div class="kv"><dt>On its own</dt><dd>${plainTrust(a)}</dd></div>
       </div></section>
       <section class="panel"><div class="panel-h"><h3>On your team</h3></div><div class="panel-b stack g12">
         <div class="rowflex"><span class="tiny faint">Installed by</span><span class="topbar-spacer"></span>
@@ -1240,8 +1270,7 @@ SCREENS["m/installed"]=()=>{
     ${mine.map(a=>`<div class="row s-ok"><span class="stripe"></span>${glyph(a,"sm")}
       <div class="row-main"><span class="row-title">${esc(a.name)}</span>
         <span class="row-sub">${esc(a.trigger.detail)} · last run ${["08:15","08:16","09:58","07:02","4 days ago","Friday 15:58"][mine.indexOf(a)]||"today"}</span></div>
-      <div class="row-aside">${autChip(a.autonomy)}
-        <span class="chip">v${a.v}</span>
+      <div class="row-aside">
         <button class="btn sm" data-act="configure" data-id="${a.id}">Settings</button>
         <button class="switch" role="switch" aria-checked="true" aria-label="Pause ${esc(a.name)}" data-act="pause"></button></div></div>`).join("")}
   </div></section>
@@ -1269,8 +1298,7 @@ function approvalCard(ap){
   return `<section class="panel" style="margin-bottom:16px">
     <div class="panel-h">${glyph(a,"sm")}
       <div style="min-width:0"><h3>${esc(ap.subject)}</h3>
-        <div class="tiny faint" style="margin-top:2px">${esc(ap.kind)} · ${esc(a.name)} · ${esc(ap.when)}</div></div>
-      <div class="r">${autChip(a.autonomy)}</div></div>
+        <div class="tiny faint" style="margin-top:2px">${esc(ap.kind)} · ${esc(a.name)} · ${esc(ap.when)}</div></div></div>
     <div class="panel-b stack g12">
       <div class="rowflex tiny" style="gap:16px">
         <span><span class="faint">To</span> <b>${esc(ap.to)}</b></span>
@@ -2561,7 +2589,7 @@ function installModal(id){
   const a=A(id); if(!a) return;
   modal(`<div class="panel-h" style="border-radius:11px 11px 0 0">${glyph(a)}
       <div><h3>Install ${esc(a.name)}</h3>
-        <div class="tiny faint" style="margin-top:2px">Built by ${esc(P(a.by).n)} · v${a.v}</div></div>
+        <div class="tiny faint" style="margin-top:2px">Built by ${esc(P(a.by).n)}</div></div>
       <div class="r"><button class="btn sm ghost" data-act="close">${ICON.x}</button></div></div>
     <div class="modal-b stack g16">
       <p style="font-size:13.5px;line-height:1.65">${esc(a.blurb)}</p>
@@ -2574,8 +2602,8 @@ function installModal(id){
           <span class="row-sub" style="color:var(--ink)">${a.writes.length?a.writes.join(" · "):"Nothing"}</span></div></div>
         <div class="row s-${a.autonomy==="auto"?"bad":a.autonomy==="draft"?"hot":"ok"}" style="padding-block:11px">
           <span class="stripe"></span><div class="row-main">
-          <span class="tiny faint">Autonomy</span>
-          <span class="row-sub" style="color:var(--ink)"><b>${AUT[a.autonomy].l}</b> — ${esc(AUT[a.autonomy].d)}</span></div></div>
+          <span class="tiny faint">What it does on its own</span>
+          <span class="row-sub" style="color:var(--ink)">${esc(a.plain.trust)}</span></div></div>
       </div>
       <div class="callout info"><b>Defaults are already set.</b> You can install now and change anything later — ${a.params.length} settings are yours.</div>
     </div>
@@ -2665,6 +2693,20 @@ $("#themebtn").addEventListener("click",()=>{
 });
 
 window.addEventListener("hashchange",render);
+
+/* ── version switcher ────────────────────────────────────────────────
+   Each version folder carries this file with its own THIS_VERSION.
+   Switching keeps the current route, so the same screen can be
+   compared across versions. */
+const THIS_VERSION="v2";
+(function(){
+  const sel=$("#versel"); if(!sel) return;
+  sel.value=THIS_VERSION;
+  sel.addEventListener("change",()=>{
+    location.href=`../${sel.value}/bench.html`+location.hash;
+  });
+})();
+
 if(!location.hash) location.hash=HOME.member;
 render();
 </script>

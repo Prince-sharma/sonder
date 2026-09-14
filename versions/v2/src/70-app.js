@@ -120,7 +120,7 @@ function installModal(id){
   const a=A(id); if(!a) return;
   modal(`<div class="panel-h" style="border-radius:11px 11px 0 0">${glyph(a)}
       <div><h3>Install ${esc(a.name)}</h3>
-        <div class="tiny faint" style="margin-top:2px">Built by ${esc(P(a.by).n)} · v${a.v}</div></div>
+        <div class="tiny faint" style="margin-top:2px">Built by ${esc(P(a.by).n)}</div></div>
       <div class="r"><button class="btn sm ghost" data-act="close">${ICON.x}</button></div></div>
     <div class="modal-b stack g16">
       <p style="font-size:13.5px;line-height:1.65">${esc(a.blurb)}</p>
@@ -133,8 +133,8 @@ function installModal(id){
           <span class="row-sub" style="color:var(--ink)">${a.writes.length?a.writes.join(" · "):"Nothing"}</span></div></div>
         <div class="row s-${a.autonomy==="auto"?"bad":a.autonomy==="draft"?"hot":"ok"}" style="padding-block:11px">
           <span class="stripe"></span><div class="row-main">
-          <span class="tiny faint">Autonomy</span>
-          <span class="row-sub" style="color:var(--ink)"><b>${AUT[a.autonomy].l}</b> — ${esc(AUT[a.autonomy].d)}</span></div></div>
+          <span class="tiny faint">What it does on its own</span>
+          <span class="row-sub" style="color:var(--ink)">${esc(a.plain.trust)}</span></div></div>
       </div>
       <div class="callout info"><b>Defaults are already set.</b> You can install now and change anything later — ${a.params.length} settings are yours.</div>
     </div>
@@ -224,6 +224,20 @@ $("#themebtn").addEventListener("click",()=>{
 });
 
 window.addEventListener("hashchange",render);
+
+/* ── version switcher ────────────────────────────────────────────────
+   Each version folder carries this file with its own THIS_VERSION.
+   Switching keeps the current route, so the same screen can be
+   compared across versions. */
+const THIS_VERSION="v2";
+(function(){
+  const sel=$("#versel"); if(!sel) return;
+  sel.value=THIS_VERSION;
+  sel.addEventListener("change",()=>{
+    location.href=`../${sel.value}/bench.html`+location.hash;
+  });
+})();
+
 if(!location.hash) location.hash=HOME.member;
 render();
 </script>

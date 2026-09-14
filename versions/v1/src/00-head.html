@@ -96,6 +96,17 @@ button,input,select,textarea{font:inherit;color:inherit}
   color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;margin-left:2px}
 .topbar-spacer{flex:1}
 
+/* version switcher — jumps between the version folders, keeping the route */
+.versel{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--ink-2);
+  padding:5px 8px;cursor:pointer;flex-shrink:0;-webkit-appearance:none;appearance:none;
+  padding-right:22px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 12px) 55%,calc(100% - 8px) 55%;
+  background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+.versel:hover{color:var(--ink);border-color:var(--brand-line)}
+.versel:focus-visible{outline-offset:0}
+
 .roleswitch{display:flex;align-items:center;gap:0;background:var(--surface-2);border:1px solid var(--line);
   border-radius:7px;padding:2px;overflow-x:auto;scrollbar-width:none}
 .roleswitch::-webkit-scrollbar{display:none}

@@ -1,3 +1,11 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>:root{color-scheme:light dark}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
 <title>Bench</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,6 +103,17 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
   color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;margin-left:2px}
 .topbar-spacer{flex:1}
+
+/* version switcher — jumps between the version folders, keeping the route */
+.versel{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--ink-2);
+  padding:5px 8px;cursor:pointer;flex-shrink:0;-webkit-appearance:none;appearance:none;
+  padding-right:22px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 12px) 55%,calc(100% - 8px) 55%;
+  background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+.versel:hover{color:var(--ink);border-color:var(--brand-line)}
+.versel:focus-visible{outline-offset:0}
 
 .roleswitch{display:flex;align-items:center;gap:0;background:var(--surface-2);border:1px solid var(--line);
   border-radius:7px;padding:2px;overflow-x:auto;scrollbar-width:none}
@@ -401,6 +420,11 @@ pre.code{display:block;padding:13px 15px;overflow-x:auto;white-space:pre;line-he
     <span class="brand-name">Bench</span>
     <span class="brand-tag">Plum · Prototype</span>
   </div>
+  <select class="versel" id="versel" aria-label="Prototype version">
+    <option value="v1">v1 · Pilot</option>
+    <option value="v2">v2 · Simpler member UI</option>
+    <option value="v3">v3 · Fresh install</option>
+  </select>
   <div class="topbar-spacer"></div>
   <div class="roleswitch" id="roleswitch" role="group" aria-label="Preview as"></div>
   <button class="iconbtn" id="notesbtn" aria-pressed="false" title="Show design notes" aria-label="Show design notes">
@@ -2657,6 +2681,22 @@ $("#themebtn").addEventListener("click",()=>{
 });
 
 window.addEventListener("hashchange",render);
+
+/* ── version switcher ────────────────────────────────────────────────
+   Each version folder carries this file with its own THIS_VERSION.
+   Switching keeps the current route, so the same screen can be
+   compared across versions. */
+const THIS_VERSION="v1";
+(function(){
+  const sel=$("#versel"); if(!sel) return;
+  sel.value=THIS_VERSION;
+  sel.addEventListener("change",()=>{
+    location.href=`../${sel.value}/bench.html`+location.hash;
+  });
+})();
+
 if(!location.hash) location.hash=HOME.member;
 render();
 </script>
+</body>
+</html>

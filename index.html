@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bench — prototype versions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F4F4F5; --surface:#FFFFFF; --surface-2:#FAFAFA; --surface-3:#F1F1F3;
+  --ink:#09090B; --ink-2:#4B4B53; --ink-3:#70707A;
+  --line:#E2E2E6; --line-2:#EFEFF2;
+  --brand-fill:#18181B; --brand-ink:#09090B; --on-brand:#FFFFFF;
+  --good:#15683A; --good-soft:#EDF6F0; --good-line:#A9CDB8;
+  --shadow-sm:0 1px 2px rgba(9,9,11,.06);
+  --shadow:0 1px 2px rgba(9,9,11,.05),0 10px 28px -14px rgba(9,9,11,.22);
+  --sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#08080A; --surface:#121214; --surface-2:#18181B; --surface-3:#232327;
+    --ink:#FAFAFA; --ink-2:#A8A8B2; --ink-3:#85858F;
+    --line:#2A2A2F; --line-2:#1E1E22;
+    --brand-fill:#FAFAFA; --brand-ink:#FAFAFA; --on-brand:#09090B;
+    --good:#5CC98A; --good-soft:#10251A; --good-line:#265238;
+    --shadow-sm:0 1px 2px rgba(0,0,0,.5);
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 28px -14px rgba(0,0,0,.8);
+  }
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;
+  line-height:1.5;margin:0;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:inherit}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-2)}
+.topbar{position:sticky;top:0;z-index:60;background:var(--surface);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;padding:0 20px;height:56px}
+.brand{display:flex;align-items:center;gap:9px}
+.brand-mark{width:24px;height:24px}
+.brand-name{font-weight:700;font-size:17px;letter-spacing:-.032em}
+.brand-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:2px 5px}
+.wrap{max-width:980px;margin:0 auto;padding:44px 20px 80px}
+h1{font-size:26px;font-weight:700;letter-spacing:-.028em;margin:0 0 8px}
+.sub{color:var(--ink-2);max-width:64ch;margin:0 0 34px;font-size:14.5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.vcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-sm)}
+.vtag{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-2);background:var(--surface-3);
+  border:1px solid var(--line);border-radius:4px;padding:3px 7px;align-self:flex-start}
+.vcard h2{font-size:17px;font-weight:650;letter-spacing:-.018em;margin:0}
+.vcard p{color:var(--ink-2);font-size:13.5px;margin:0}
+.vdiff{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.vdiff li{font-size:12.5px;color:var(--ink-2);display:flex;gap:8px;align-items:flex-start}
+.vdiff li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--ink-3);
+  margin-top:7px;flex-shrink:0}
+.open{margin-top:auto;display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  background:var(--brand-fill);color:var(--on-brand);border:0;border-radius:7px;
+  padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none}
+.open:hover{opacity:.92}
+.foot{margin-top:40px;color:var(--ink-3);font-size:12.5px;line-height:1.7;
+  border-top:1px solid var(--line-2);padding-top:18px}
+.foot code{font-family:var(--mono);font-size:11.5px;background:var(--surface-3);
+  border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="currentColor" stroke-width="1.6" opacity=".3"/>
+      <path d="M6.5 15.5 L6.5 8.5 M12 15.5 L12 5.5 M17.5 15.5 L17.5 11" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+      <circle cx="12" cy="18.6" r="1.5" fill="currentColor"/>
+    </svg>
+    <span class="brand-name">Bench</span>
+    <span class="brand-tag">Plum · Prototype</span>
+  </div>
+</div>
+<div class="wrap">
+  <div class="eyebrow" style="margin-bottom:10px">Version index</div>
+  <h1>Three cuts of the same prototype</h1>
+  <p class="sub">Bench is a UI/UX prototype for an internal agent platform — a subject-matter
+  expert builds an agent once, the team installs it. Each version below is a self-contained
+  page; the version switcher in each page's top bar jumps between them without losing your
+  place.</p>
+  <div class="cards">
+    <a class="vcard" href="versions/v1/bench.html">
+      <span class="vtag">v1 · Pilot</span>
+      <h2>The destination</h2>
+      <p>A sales team eight weeks in: 8 live agents, adoption and impact data, approvals
+      flowing, requests shipping. All three personas on full seed data.</p>
+      <ul class="vdiff">
+        <li>Member, team admin and super admin, 23 routes</li>
+        <li>Design-notes overlay explaining every decision</li>
+        <li>Developer handoff section (object model, flows)</li>
+      </ul>
+      <span class="open">Open v1 →</span>
+    </a>
+    <a class="vcard" href="versions/v2/bench.html">
+      <span class="vtag">v2 · Simpler member UI</span>
+      <h2>Members see less jargon</h2>
+      <p>Same platform; the member-facing screens drop platform vocabulary and speak in
+      outcomes. Admin screens keep the full detail they need.</p>
+      <ul class="vdiff">
+        <li>No Verified badge, no version numbers for members</li>
+        <li>Suggest / Draft / Schedule / Event chips replaced with plain sentences</li>
+        <li>Store cards lead with what it does and when it runs</li>
+      </ul>
+      <span class="open">Open v2 →</span>
+    </a>
+    <a class="vcard" href="versions/v3/bench.html">
+      <span class="vtag">v3 · Fresh install</span>
+      <h2>Day zero, and the road to v1</h2>
+      <p>What the org sees when Bench is installed empty, with setup nudges at super-admin
+      level first, then team-admin level. A journey control walks the org from empty to
+      the full pilot.</p>
+      <ul class="vdiff">
+        <li>Empty states everywhere, each with the next step</li>
+        <li>Super-admin setup checklist: team, people, connections</li>
+        <li>Team-admin path: context → build → test → publish</li>
+      </ul>
+      <span class="open">Open v3 →</span>
+    </a>
+  </div>
+  <p class="foot">Each version is one self-contained HTML file — no server, no build step to
+  view. To edit one, change the pieces in <code>versions/vN/src/</code> and run
+  <code>bash versions/vN/build.sh</code>. The version switcher in the top bar keeps your
+  current route when it jumps. Repo: <span class="mono">Prince-sharma/sonder</span>.</p>
+</div>
+</body>
+</html>

@@ -224,6 +224,20 @@ $("#themebtn").addEventListener("click",()=>{
 });
 
 window.addEventListener("hashchange",render);
+
+/* ── version switcher ────────────────────────────────────────────────
+   Each version folder carries this file with its own THIS_VERSION.
+   Switching keeps the current route, so the same screen can be
+   compared across versions. */
+const THIS_VERSION="v3";
+(function(){
+  const sel=$("#versel"); if(!sel) return;
+  sel.value=THIS_VERSION;
+  sel.addEventListener("change",()=>{
+    location.href=`../${sel.value}/bench.html`+location.hash;
+  });
+})();
+
 if(!location.hash) location.hash=HOME.member;
 render();
 </script>

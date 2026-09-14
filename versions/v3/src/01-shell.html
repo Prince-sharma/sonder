@@ -1,0 +1,29 @@
+<div class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="currentColor" stroke-width="1.6" opacity=".3"/>
+      <path d="M6.5 15.5 L6.5 8.5 M12 15.5 L12 5.5 M17.5 15.5 L17.5 11" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+      <circle cx="12" cy="18.6" r="1.5" fill="currentColor"/>
+    </svg>
+    <span class="brand-name">Bench</span>
+    <span class="brand-tag">Plum · Prototype</span>
+  </div>
+  <select class="versel" id="versel" aria-label="Prototype version">
+    <option value="v1">v1 · Pilot</option>
+    <option value="v2">v2 · Simpler member UI</option>
+    <option value="v3">v3 · Fresh install</option>
+  </select>
+  <div class="topbar-spacer"></div>
+  <div class="roleswitch" id="roleswitch" role="group" aria-label="Preview as"></div>
+  <button class="iconbtn" id="notesbtn" aria-pressed="false" title="Show design notes" aria-label="Show design notes">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.2v4M8 4.7v.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+  <button class="iconbtn" id="themebtn" title="Switch theme" aria-label="Switch theme">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.2 9.6A5.6 5.6 0 0 1 6.4 2.8a5.6 5.6 0 1 0 6.8 6.8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+<div class="app">
+  <nav class="rail" id="rail" aria-label="Sections"></nav>
+  <main class="main" id="main"></main>
+</div>
+<div id="layer"></div>
