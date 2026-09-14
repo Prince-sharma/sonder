@@ -19,6 +19,8 @@ cat > bench.html <<'EOHEAD'
 </head>
 <body>
 EOHEAD
+# access gate — deployment-only tag for the standalone page (not in dist/artifact-body.html)
+printf '<script src="../../gate.js"></script>\n' >> bench.html
 cat dist/artifact-body.html >> bench.html
 printf '</body>\n</html>\n' >> bench.html
 

@@ -11,12 +11,36 @@ top bar jumps between versions, keeping your current route.
 
 ## Open it
 
+- **Published:** `https://prince-sharma.github.io/sonder/` — passworded (see below)
 - **`index.html`** — version index. Start here.
 - `versions/v1/bench.html` — v1 · Pilot
 - `versions/v2/bench.html` — v2 · Simpler member UI
 - `versions/v3/bench.html` — v3 · Fresh install
 
 Or serve the folder (`python3 -m http.server`) and open `/`.
+
+## The access gate (published site only)
+
+The published Pages site asks for a password once per browser (30 days). It's a
+casual gate for a design prototype on static hosting — not real security; there
+is no server to verify a password, so a determined reader can get past it.
+
+How it works:
+
+- `gate.js` (repo root) runs on every published page. Locked → redirects to
+  `access.html?next=…`. Not active for `file://` opens or `localhost`.
+- `access.html` hashes the entered password with SHA-256 (Web Crypto) and
+  compares it to the hash in the source. The password itself is never in the
+  repo. Match → stores `hash|timestamp` in `localStorage` → returns you to
+  where you were going.
+- Each version's `build.sh` injects the `<script src="../../gate.js">` tag into
+  the standalone `bench.html` only — `dist/artifact-body.html` (for Claude
+  Artifacts) stays clean, and `src/` is untouched.
+
+**To change the password:** pick a new one, compute
+`printf '%s' 'new-password' | shasum -a 256`, and replace the `HASH` constant in
+**both** `gate.js` and `access.html` (they must match), then rebuild all three
+versions and push.
 
 ## The versions
 
