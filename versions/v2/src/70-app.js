@@ -218,8 +218,7 @@ $("#notesbtn").addEventListener("click",()=>{
 
 $("#themebtn").addEventListener("click",()=>{
   const cur=document.documentElement.getAttribute("data-theme");
-  const sysDark=window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const next = cur ? (cur==="dark"?"light":"dark") : (sysDark?"light":"dark");
+  const next = cur==="dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme",next);
 });
 

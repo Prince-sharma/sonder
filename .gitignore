@@ -1,1 +1,3 @@
 .DS_Store
+# raw Claude export — the PRD it holds is published at the repo root
+Claude outputs/

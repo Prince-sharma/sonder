@@ -69,9 +69,10 @@ carries no hue. Colour survives only in status: four dark, low-chroma hues on se
 stripes and status chips, each of which also ships an icon and a word, so meaning never
 rests on colour alone. Every text value clears 4.5:1 on its own surface in both themes.
 
-Tokens are the first block of `src/00-head.html`, defined three times: bare `:root`
-for light, `@media (prefers-color-scheme: dark)` guarded with `:root:not([data-theme="light"])`,
-and `:root[data-theme="dark"]`. Change a colour in all three or the toggle breaks.
+Tokens are the first block of `src/00-head.html`, defined twice: bare `:root` for
+light — the default for every visitor, regardless of OS setting — and
+`:root[data-theme="dark"]`, which only the toggle sets. Change a colour in both
+or the toggle breaks.
 
 A Plum-branded version was built and replaced — `docs/05-plum-brand-tokens.md` has the
 real values read off plumhq.com's live stylesheet if you want it back.

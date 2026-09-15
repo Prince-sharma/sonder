@@ -287,6 +287,13 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
   background:var(--surface);border:1.5px solid var(--line-2);box-shadow:0 0 0 3px var(--surface)}
 .tstep.done::before{background:var(--good);border-color:var(--good)}
 .tstep.live::before{background:var(--warn);border-color:var(--warn)}
+/* v4 — trace step kinds. Amber is a decision NOT to act; red is a stop. */
+.tstep.warn::before{background:var(--warn);border-color:var(--warn)}
+.tstep.fail::before{background:var(--crit);border-color:var(--crit)}
+.tstep.block::before{background:var(--warn);border-color:var(--warn);box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--warn-line)}
+.tstep.auto::before{background:var(--crit);border-color:var(--crit);box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--crit-line)}
+.tstep.warn,.tstep.fail,.tstep.block{color:var(--ink)}
+.chip.solid{background:var(--brand-fill);color:var(--on-brand);border-color:var(--brand-fill)}
 .tstep b{color:var(--ink);font-weight:600}
 
 /* ───────────────────────────── chat ───────────────────────────── */

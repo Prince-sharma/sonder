@@ -1,0 +1,35 @@
+id,finding,evidence_type,source,verdict,spec_section,requirements,v4_screen
+A1,"Create makes a working agent in ~12 seconds with no wizard",observed,journal 16:49 day1/03,steal,5.1,BR-C-001..003,#/a/new
+A2,"Empty workspace nudges four next steps in the product's voice",observed,journal 16:51 day1/07,steal,5.1,BR-C-004,#/a/new
+A3,"Natural-language cron parsed and echoed back; no cron syntax anywhere",observed,journal 17:00 day1/13+15,steal,5.4,BR-C-014..016,#/a/build config
+A4,"Create-click to running scheduled agent: 17m 30s",measured,teardown §1,bar,5.8,BR-C-036,—
+A5,"Config split across Settings and Agent tabs; instructions in the wrong one",observed,journal 16:55 teardown §7,avoid,5.3,BR-C-010,#/a/build config
+A6,"Self-updates + AI-managed triggers/connectors/skills + self-cloning subagents, all on",observed,journal 18:15 day3/13,invert,8.6,BR-X-022..026,#/s/spend
+A7,"Agent refuses to guess and names exactly what it did not do",observed,journal 18:37-38 day3/29-30,specify,5.5 7.3,BR-C-022 BR-M-012,#/a/run trace
+A8,"Abandoned agent draws no nudge outside its own workspace",observed,journal 17:36 teardown §7,invert,5.1,BR-C-006,#/a/new #/a/pulse
+A9,"Knowledge enters only by sync or upload; cannot be typed",observed,journal 17:24,invert,8.5,BR-X-021,#/a/context
+B1,"Nothing crosses personal to team; no move-to-team control exists",observed,journal 18:06/18:13/18:18 day3/01-20 teardown §5,invert,6.1,BR-S-001..004,#/a/share
+B2,"Share dialog is Restricted / Organization / Anyone plus email invite",observed,journal 18:14 day3/12-13,steal shape,6.2,BR-S-005..006,#/a/share
+B3,"Sharing grants chat+config-edit+private history; ownership stays personal",observed,teardown §5,specify,6.6,BR-S-017,#/a/share
+B4,"Shared artifacts run on the viewer's own credentials",comparison,03-AGENT-BUILDING-INSIGHTS §2.6,confirm,8.3,BR-X-012,install modal
+B5,"Without a gallery distribution stays one-to-one",comparison,03 §2.6 matrix §6,counter,6.8,BR-S-022..025,#/a/share
+B6,"OAuth default is unrestricted access, labelled Recommended; 28 complaint topics",observed+voc,08-walkthrough §1; 03 §2.5,avoid,6.5,BR-S-013..016,install modal
+B7,"Onboarding sells outcomes for five steps before asking one permission",observed,08-walkthrough §1,steal,6.4,BR-S-010..012,install modal
+B8,"Deprecations broke running agents; repair pushed onto the customer",voc,03 §3.2 topics 2508/3269/3672,avoid,6.9,BR-S-026..027,#/a/share
+C1,"'Could really use a log' is the #1 organic request by engagement",voc,03 §2.8 topic 2736 kill-list §1.4,build first,7.4,BR-M-013..017,#/a/runs
+C2,"Blocked runs recorded Completed; Failed and Approval tabs never fire",observed,journal 18:40 day3/31-33; 19:20 day4/23-25,invert,7.1 7.2,BR-M-001..008,#/a/runs #/m/waiting
+C3,"Run output hides in per-run chat threads; ledger carries cost and status only",observed,teardown §9 day4/23-28c,invert,7.4 7.5,BR-M-015 BR-M-018..022,#/a/run
+C4,"The best cost surface is a settings page almost nobody finds",observed,journal 18:55 day4/11,invert,5.4 7.5,BR-C-017 BR-M-022,#/a/build #/a/run
+C5,"Two cost surfaces disagree by exactly 3 on all three triggers",observed n=1,teardown §10 day4/53,avoid,7.8,BR-M-035,#/a/schedules
+C6,"7/19/33/37-85 credits per run; one agent exhausts a month in 5-11 days",measured,teardown §10; journal 19:26,avoid,5.4 7.7,BR-C-017 BR-M-027..032,#/a/schedules #/s/spend
+C7,"One pre-action cost estimate exists, on a knowledge-sync panel",observed,journal 17:26 day1/40 teardown §3,steal,Law L3,—,#/a/build #/a/publish
+C8,"Trigger deletion behind an unlabelled ellipsis; six passes to find",observed,teardown §7 §10 day4/50-52c,avoid,7.6 8.7,BR-M-023..026 BR-X-027..028,#/a/schedules
+C9,"Home surfaces accrued state and pulls the user back",observed,journal 17:34 teardown §2,steal,7.10,BR-M-042..043,#/a/pulse
+C10,"17-operation evals API; 1 of 6377 posts mentions 'evaluation'",voc,03 §2.7 kill-list §1.4,gate it,5.8 5.9,BR-C-032..033 BR-C-042,#/a/test #/a/publish
+C11,"Approvals conditioned on the arguments of the action; Slack as the surface",comparison,03 §2.3,steal,8.2,BR-X-005 BR-X-008..011,#/m/approvals
+C12,"What a switcher gives up is an inspectable run",comparison,teardown §12,answer,7.5,BR-M-018..022,#/a/run
+D1,"Per-role caps designed right, priced above the pain; 5 of 9 churn stories are billing",voc,03 §2.4 §3.1,avoid,7.7,BR-M-032,#/s/spend
+D2,"Background meter bills every 1-3 hours whether used or not",measured,journal 18:55 day4/11,avoid,7.8,BR-M-036,#/a/schedules
+D3,"Connector depth is the third-largest complaint family (226 topics)",voc,03 §3.3,avoid,10,—,—
+D4,"Three practitioners exited the canvas for the mass buyer within a year",comparison,03 §2.10; 04 D1,confirm,10,—,#/a/build
+D5,"Skills demand unproven: ~3 of 708 topics mention 'skill'",comparison,03 §2.1 §4.4,caveat,8.6,BR-X-022..026,#/s/spend

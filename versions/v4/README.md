@@ -1,4 +1,4 @@
-# Bench — UI/UX prototype · v3 (Fresh install)
+# Bench — UI/UX prototype · v4 (Operational)
 
 An internal agent platform for business teams. A subject-matter expert builds an
 agent once; their teammates install it and it runs from the next trigger. Replaces
@@ -7,13 +7,20 @@ handing every business user an individual AI subscription.
 **Pilot tenant in this prototype:** Plum, a group employee-benefits insurance broker
 in India. **Team:** Sales, 14 people.
 
-"v3" is the same platform as v2 but **starting from scratch** — see
-[What's different in v3](#whats-different-in-v3) below. Everything else in this
-README describes the shared prototype.
+"v4" is v3 plus the layer that makes it a product rather than a design artifact:
+runs you can read, failures you can see, schedules you can stop, budgets that bite
+before the invoice does, and publishing that actually hands the agent to the team.
+Every addition traces to an observation from a four-day founder teardown of a shipping
+agent platform — see **[docs/07-whats-new-in-v4.md](docs/07-whats-new-in-v4.md)** for
+the screen-by-screen list and the finding behind each one, and `../../work/` for the
+digest, the gap analysis and the decisions log.
+
+v4 **opens at the full pilot** so every operational surface is populated on load.
+v3's journey still works from the bar, or deep-link `bench.html?stage=1`.
 
 ---
 
-## What's different in v3
+## What's different in v3 (still here)
 
 v1/v2 open with the pilot preloaded — eight agents, adoption data, approvals
 flowing. v3 answers the question behind that: **how does an org get there from

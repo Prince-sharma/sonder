@@ -16,6 +16,7 @@ top bar jumps between versions, keeping your current route.
 - `versions/v1/bench.html` — v1 · Pilot
 - `versions/v2/bench.html` — v2 · Simpler member UI
 - `versions/v3/bench.html` — v3 · Fresh install
+- `versions/v4/bench.html` — v4 · Operational  ← **start here**
 
 Or serve the folder (`python3 -m http.server`) and open `/`.
 
@@ -39,7 +40,7 @@ How it works:
 
 **To change the password:** pick a new one, compute
 `printf '%s' 'new-password' | shasum -a 256`, and replace the `HASH` constant in
-**both** `gate.js` and `access.html` (they must match), then rebuild all three
+**both** `gate.js` and `access.html` (they must match), then rebuild all four
 versions and push.
 
 ## The versions
@@ -49,6 +50,7 @@ versions and push.
 | **v1 · Pilot** | The destination. A sales team eight weeks in — 8 live agents, adoption and impact data, approvals, requests. All three personas, full seed data, design-notes overlay, developer handoff section. |
 | **v2 · Simpler member UI** | Members see less jargon. Verified badges, agent version numbers and Suggest/Draft/Schedule/Event chips are gone from member screens, replaced with plain language ("Every weekday at 8:15", "Nothing sends without you"). Admin screens keep the full vocabulary. |
 | **v3 · Fresh install** | Day zero. What a fresh install looks like for an org, with setup nudges — super admin first (team, people, connections), then team admin (business context → build → test → publish). A journey control walks the org from empty to the v1 state. |
+| **v4 · Operational** | The gap between a design artifact and a product, closed against evidence. Built from a four-day founder teardown of a shipping agent platform (`~/Desktop/code/gumloop`), it adds the operational layer v1–v3 declared and never drew: a run log and per-step trace, a five-value run status where a blocked run is never called completed, a “waiting on you” surface for members, schedules with budgets and a cost projection before you commit, publishing as a transfer of ownership, and a create moment. Opens at the full pilot; v3's journey still works from the bar. |
 
 ## Layout
 
@@ -58,6 +60,9 @@ versions/
   v1/                   v1 · Pilot — the original prototype
   v2/                   v2 · Simpler member UI
   v3/                   v3 · Fresh install
+  v4/                   v4 · Operational — the build-ready version
+work/                   the thinking: teardown digest, gap analysis, decisions
+Bench-Product-Requirements-v1.0.pdf   the spec a developer builds from
 ```
 
 Each `versions/vN/` folder is independent:
